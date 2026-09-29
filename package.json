@@ -1,0 +1,13 @@
+{
+  "name": "safenet-platform",
+  "private": true,
+  "workspaces": [
+    "apps/*"
+  ],
+  "scripts": {
+    "dev:api": "npm --workspace @safenet/api run dev",
+    "dev:web": "npm --workspace @safenet/web run dev",
+    "build": "npm --workspace @safenet/api run build && npm --workspace @safenet/web run build",
+    "test": "npm --workspace @safenet/api run test"
+  }
+}
