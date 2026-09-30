@@ -3,26 +3,26 @@
 ## Design principles
 
 - Consent-first monitoring
-- Deterministic emergency state machine independent from AI
-- Privacy-preserving nearby-device awareness without exposing unrelated identities
-- Simulated emergency integration in demo mode
-- Authorized responder access only with RBAC and audit logging
+- Transparent route risk, not hidden scoring
+- Deterministic emergency escalation independent from AI alone
+- Privacy-preserving nearby-location logic
+- Simulated emergency integration clearly labeled as demo
 
 ## Core backend flow
 
 1. User enters destination and selects a route.
 2. SAFENET evaluates route factors and data confidence.
 3. User explicitly grants consent before monitoring begins.
-4. System starts Safe Journey monitoring and records in the journey table.
-5. Guardian AI can explain the risk profile in plain language.
-6. Sensor anomaly checks and business rules trigger timer-based verification.
+4. System starts a Safe Journey and records it in the journey table.
+5. Guardian AI explains the route risk with plain-language reasoning.
+6. Sensor anomaly checks and business rules trigger a timer-based verification.
 7. Escalation occurs only when thresholds are crossed and no user confirmation is received.
-8. Emergency event is sent only to the configured integration for authorized systems.
+8. An emergency event is sent to the configured integration only when authorized.
 
-## Privacy architecture
+## Privacy and governance
 
 - Encrypt data in transit and at rest
-- Short retention periods via retention_policies
-- Minimal data exposure to responders
-- Least-privilege access model
-- Immutable audit logs for user access and emergency actions
+- Apply short retention windows for sensitive logs
+- Minimize responder access to only the information necessary for action
+- Keep immutable audit trails for each emergency or consent event
+- Use least-privilege authorization and MFA for responder roles

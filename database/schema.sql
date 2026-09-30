@@ -80,14 +80,10 @@ CREATE TABLE route_risk_factors (
 CREATE TABLE sensor_events (
   id UUID PRIMARY KEY,
   journey_id UUID REFERENCES journeys(id),
-  accelerometer_x DOUBLE PRECISION,
-  accelerometer_y DOUBLE PRECISION,
-  accelerometer_z DOUBLE PRECISION,
-  gyroscope_x DOUBLE PRECISION,
-  gyroscope_y DOUBLE PRECISION,
-  gyroscope_z DOUBLE PRECISION,
   motion_score DOUBLE PRECISION,
-  anomaly_score DOUBLE PRECISION,
+  acceleration DOUBLE PRECISION,
+  orientation_change DOUBLE PRECISION,
+  gps_confidence DOUBLE PRECISION,
   event_type TEXT,
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
