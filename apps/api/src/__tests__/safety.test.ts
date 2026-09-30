@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { analyzeRoutes, processJourneyEvent } from '../services/safety';
 
-describe('SAFE NET safety engine', () => {
+describe('SAFENET safety engine', () => {
   it('returns route risk profiles with transparent factors', () => {
     const routes = analyzeRoutes('Nehru Place', 'Banjara Hills');
 

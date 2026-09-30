@@ -48,19 +48,17 @@ export default function App() {
   const [guardianInput, setGuardianInput] = useState('Is this route safe?');
   const [incidentFeed, setIncidentFeed] = useState<any[]>([]);
 
+  const refreshAll = async () => {
+    await Promise.all([fetchRoutes(), fetchNodes(), fetchIncidents()]);
+  };
+
   useEffect(() => {
-    fetchRoutes();
-    fetchNodes();
-    fetchIncidents();
-
+    void refreshAll();
     const interval = setInterval(() => {
-      fetchRoutes();
-      fetchNodes();
-      fetchIncidents();
+      void refreshAll();
     }, 20000);
-
     return () => clearInterval(interval);
-  }, []);
+  }, [destination]);
 
   const fetchRoutes = async () => {
     const response = await fetch(`${API_URL}/safety/routes?origin=Nehru%20Place&destination=${encodeURIComponent(destination)}`);
@@ -91,10 +89,10 @@ export default function App() {
         userId: 'user-001',
         origin: 'Nehru Place',
         destination,
-        selectedRoute: selectedRoute?.routeName || 'Route A'
+        selectedRoute: selectedRoute?.routeName || 'Route A',
+        consentState: 'granted'
       })
     });
-
     const data = await response.json();
     setActiveJourney(data.journey);
     setResponseText(data.message);
@@ -104,7 +102,10 @@ export default function App() {
     const response = await fetch(`${API_URL}/guardian/chat`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ message: guardianInput, selectedRoute: selectedRoute?.routeName || 'Route A' })
+      body: JSON.stringify({
+        message: guardianInput,
+        selectedRoute: selectedRoute?.routeName || 'Route A'
+      })
     });
     const data = await response.json();
     setResponseText(data.reply);
@@ -121,7 +122,23 @@ export default function App() {
     });
     const data = await response.json();
     setResponseText(data.message);
-    fetchIncidents();
+    await fetchIncidents();
+  };
+
+  const confirmSafe = async () => {
+    if (!activeJourney) return;
+    const response = await fetch(`${API_URL}/journeys/${activeJourney.id}/confirm`, { method: 'POST' });
+    const data = await response.json();
+    setActiveJourney(data.journey);
+    setResponseText(data.message);
+  };
+
+  const cancelJourney = async () => {
+    if (!activeJourney) return;
+    const response = await fetch(`${API_URL}/journeys/${activeJourney.id}/cancel`, { method: 'POST' });
+    const data = await response.json();
+    setActiveJourney(data.journey);
+    setResponseText(data.message);
   };
 
   return (
@@ -186,7 +203,7 @@ export default function App() {
               <p>
                 <strong>{selectedRoute.routeName}</strong> has {selectedRoute.emergencyServices.toLowerCase()} emergency access,
                 {selectedRoute.publicActivity.toLowerCase()} public activity, and {selectedRoute.lighting.toLowerCase()} lighting data.
-                The route assessment is based on reported infrastructure conditions, geospatial risk indicators, and observed activity patterns.
+                The route assessment reflects infrastructure conditions, geospatial patterns, and public activity indicators.
               </p>
               <ul>
                 {selectedRoute.reasons.map((reason) => (
@@ -199,12 +216,13 @@ export default function App() {
 
         <aside className="panel side-panel">
           <div className="status-box active">
-            <h3>SAFE JOURNEY ACTIVE</h3>
+            <h3>{activeJourney ? 'SAFE JOURNEY ACTIVE' : 'SAFE JOURNEY READY'}</h3>
             <p><strong>Destination:</strong> {activeJourney?.destination || destination}</p>
             <p><strong>ETA:</strong> {activeJourney?.estimatedArrivalTime || '20:45'}</p>
-            <p><strong>Monitoring:</strong> ACTIVE</p>
+            <p><strong>Monitoring:</strong> {activeJourney?.monitoringStatus || 'OFF'}</p>
             <div className="action-row">
-              <button className="ghost-btn">I&apos;m Safe</button>
+              <button className="ghost-btn" onClick={confirmSafe}>I&apos;m Safe</button>
+              <button className="ghost-btn" onClick={cancelJourney}>Cancel</button>
               <button className="danger-btn" onClick={triggerEmergency}>Emergency</button>
             </div>
           </div>
@@ -224,13 +242,13 @@ export default function App() {
         <section className="panel">
           <div className="panel-header">
             <h2>Guardian AI</h2>
-            <button className="mic-btn">🎙</button>
+            <button className="mic-btn" aria-label="Voice input">🎙</button>
           </div>
 
           <textarea value={guardianInput} onChange={(event) => setGuardianInput(event.target.value)} />
           <button className="primary-btn" onClick={askGuardian}>Ask Guardian</button>
           <div className="response-box">
-            {responseText || 'The guardian will explain route risk in plain language, separate verified information from uncertainty, and never pressure the user into a route.'}
+            {responseText || 'Guardian explains verified information, risk indicators, uncertainty, and unavailable data without unsupported claims.'}
           </div>
         </section>
 

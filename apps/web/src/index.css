@@ -15,14 +15,10 @@ body {
   margin: 0;
   min-width: 320px;
   min-height: 100vh;
-  background:
-    radial-gradient(circle at top, rgba(26, 118, 255, 0.25), transparent 25%),
-    #07111f;
+  background: radial-gradient(circle at top, rgba(26, 118, 255, 0.18), transparent 35%), #07111f;
 }
 
-button,
-input,
-textarea {
+button, input, textarea {
   font: inherit;
 }
 
@@ -61,19 +57,13 @@ button {
   flex-wrap: wrap;
 }
 
-.nav-links button,
-.primary-btn,
-.ghost-btn,
-.danger-btn,
-.mic-btn {
+.nav-links button, .primary-btn, .ghost-btn, .danger-btn, .mic-btn {
   border: 0;
   border-radius: 12px;
   padding: 10px 16px;
-  transition: opacity 0.2s ease;
 }
 
-.nav-links button,
-.ghost-btn {
+.nav-links button, .ghost-btn {
   background: rgba(148, 163, 184, 0.08);
   color: #e2e8f0;
 }
@@ -111,32 +101,19 @@ button {
   box-shadow: 0 16px 32px rgba(2, 6, 23, 0.45);
 }
 
-.large-panel {
-  grid-column: 1;
-}
-
-.side-panel {
-  grid-column: 2;
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-}
-
 .wide-panel {
   grid-column: 1 / -1;
 }
 
 .panel-header {
   display: flex;
-  align-items: center;
   justify-content: space-between;
+  align-items: center;
   gap: 16px;
   margin-bottom: 20px;
 }
 
-.panel-header h1,
-.panel-header h2,
-.panel-header h3 {
+.panel-header h1, .panel-header h2, .panel-header h3 {
   margin: 0;
 }
 
@@ -165,8 +142,7 @@ button {
   margin-bottom: 8px;
 }
 
-input,
-textarea {
+input, textarea {
   width: 100%;
   border: 1px solid rgba(148, 163, 184, 0.2);
   border-radius: 12px;
@@ -201,28 +177,20 @@ textarea {
   box-shadow: 0 0 0 1px rgba(34, 197, 94, 0.4);
 }
 
-.route-header,
-.route-stats,
-.action-row {
+.route-header, .route-stats, .action-row {
   display: flex;
   justify-content: space-between;
   gap: 12px;
   flex-wrap: wrap;
 }
 
-.route-card ul,
-.list-box,
-.explanation-box ul {
+.route-card ul, .list-box, .explanation-box ul {
   margin: 12px 0 0;
   padding-left: 18px;
   color: #cbd5e1;
 }
 
-.explanation-box,
-.response-box,
-.status-box,
-.mini-card,
-.incident-item {
+.explanation-box, .response-box, .status-box, .mini-card, .incident-item {
   border: 1px solid rgba(148, 163, 184, 0.2);
   background: rgba(15, 23, 42, 0.7);
   border-radius: 16px;
@@ -269,7 +237,6 @@ textarea {
   .layout-grid {
     grid-template-columns: 1fr;
   }
-
   .topbar {
     flex-direction: column;
     align-items: flex-start;

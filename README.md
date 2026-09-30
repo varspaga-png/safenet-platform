@@ -1,45 +1,50 @@
 # SAFENET
 
-SAFENET is an AI-powered personal safety and city-safety platform for India. It helps users choose safer routes, monitor Safe Journeys with consent, detect possible emergency conditions, and connect authorized responders with the minimum necessary information.
+SAFENET is an AI-powered personal safety and city-safety platform designed for India.
 
-## What is included
+The product is built around the principle:
+PREVENT → DETECT → VERIFY → RESPOND → LEARN
 
-- Mobile-first responsive web app for user safety flows
-- Route-risk analysis and transparent explanations
-- Guardian AI assistant for route safety questions
-- Safe Journey monitoring with consent tracking and timer logic
-- Sensor/anomaly framework for fall or sudden movement alerts
-- Simulated emergency response dashboard for demo use
-- Nearby safety nodes and privacy-preserving proximity information
-- Security and privacy architecture with consent records, audit logs, and retention guidance
-- Database schema for production-oriented data model
+The system does not claim to guarantee prevention of crime. Instead, it helps users choose safer routes, monitor Safe Journeys with consent, detect possible emergencies, and connect authorized responders with the minimum necessary information.
+
+## Included product areas
+
+- Mobile-first safety app for Safe Journey flows
+- Guardian AI for route and safety conversation
+- Transparent route risk analysis engine
+- Emergency timer and escalation state machine
+- Sensor anomaly detection framework
+- Nearby safety node discovery
+- Responder dashboard and simulated emergency integration
+- Privacy, audit, consent, and retention architecture
+- Production-oriented SQL schema for the data model
 
 ## Stack
 
 - Frontend: React + Vite + TypeScript
 - Backend: Node.js + Express + TypeScript
-- Database: PostgreSQL + PostGIS schema (seed SQL included)
-- Realtime: WebSocket-ready backend services and polling-based frontend updates
-- AI: Guardian assistant with deterministic safety rules plus simulated AI responses
+- Database: PostgreSQL + PostGIS schema included
+- Realtime: websocket-ready state model with live polling demo
+- AI: deterministic Guardian AI response layer plus safety heuristics
 
-## Local setup
+## Local run
 
 1. Install dependencies:
    npm install
-2. Start the API:
+2. Start backend:
    npm run dev:api
-3. Start the frontend:
+3. Start frontend:
    npm run dev:web
 4. Open http://localhost:5173
 
-## Production principles
+## Demo safety note
 
-SAFENET is designed around the principle:
+The emergency integration is simulated by design so the product can be shown safely without pretending to be connected to real police infrastructure.
 
-PREVENT → DETECT → VERIFY → RESPOND → LEARN
+## Security and ethics
 
-It does not claim to guarantee prevention of crime. Instead, it helps users choose safer routes, monitor journeys with consent, detect possible emergencies, and connect authorized responders with timely information.
-
-## Demo note
-
-The emergency integration is intentionally simulated so the product can be demonstrated safely without pretending to be connected to real police infrastructure.
+- No false claim of guaranteed prevention
+- No automatic criminal inference from AI alone
+- Consent-based Safe Journey monitoring
+- Verified safe nodes and emergency access only where authorized
+- Sensitive data is minimized and auditable

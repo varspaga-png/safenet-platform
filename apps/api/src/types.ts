@@ -3,9 +3,9 @@ export type RouteRisk = {
   routeName: string;
   distanceKm: number;
   durationMinutes: number;
-  emergencyServices: string;
-  publicActivity: string;
-  lighting: string;
+  emergencyServices: 'High' | 'Medium' | 'Low';
+  publicActivity: 'High' | 'Medium' | 'Low';
+  lighting: 'Good' | 'Limited' | 'Poor';
   incidentDensity: 'Low' | 'Medium' | 'High' | 'Unknown';
   dataConfidence: number;
   reasons: string[];

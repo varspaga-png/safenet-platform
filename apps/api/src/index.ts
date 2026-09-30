@@ -1,8 +1,15 @@
 import express from 'express';
 import cors from 'cors';
 import { v4 as uuidv4 } from 'uuid';
-import { analyzeRoutes, createEmergencyEvent, generateGuardianReply, getResponderIncidents, getSafetyNodes, processJourneyEvent } from './services/safety.js';
-import type { Journey, JourneyState } from './types.js';
+import {
+  analyzeRoutes,
+  createEmergencyEvent,
+  generateGuardianReply,
+  getResponderIncidents,
+  getSafetyNodes,
+  processJourneyEvent
+} from './services/safety.js';
+import type { Journey } from './types.js';
 
 const app = express();
 const port = Number(process.env.PORT || 4000);
@@ -11,7 +18,7 @@ app.use(cors());
 app.use(express.json());
 
 const journeys = new Map<string, Journey>();
-const auditLog: Array<{ type: string; timestamp: string; details: Record<string, any> }> = [];
+const auditLog: Array<{ type: string; timestamp: string; details: Record<string, unknown> }> = [];
 
 app.get('/api/health', (_req, res) => {
   res.json({ status: 'ok', service: 'SAFENET API' });
@@ -20,9 +27,7 @@ app.get('/api/health', (_req, res) => {
 app.get('/api/safety/routes', (req, res) => {
   const origin = String(req.query.origin || 'Nehru Place');
   const destination = String(req.query.destination || 'Banjara Hills');
-
-  const routes = analyzeRoutes(origin, destination);
-  res.json({ routes, origin, destination });
+  res.json({ routes: analyzeRoutes(origin, destination), origin, destination });
 });
 
 app.post('/api/journeys/start', (req, res) => {
@@ -34,10 +39,9 @@ app.post('/api/journeys/start', (req, res) => {
     consentState?: Journey['consentState'];
   };
 
-  const id = uuidv4();
   const journey = processJourneyEvent(
     {
-      id,
+      id: uuidv4(),
       userId: body.userId || 'user-demo',
       origin: body.origin || 'Nehru Place',
       destination: body.destination || 'Banjara Hills',
@@ -99,29 +103,6 @@ app.post('/api/journeys/:id/confirm', (req, res) => {
   res.json({ journey: updated, message: 'User has confirmed they are safe.' });
 });
 
-app.post('/api/journeys/:id/emergency', (req, res) => {
-  const journey = journeys.get(req.params.id);
-  if (!journey) {
-    res.status(404).json({ error: 'Journey not found.' });
-    return;
-  }
-
-  const updated = processJourneyEvent(journey, 'emergency');
-  journeys.set(journey.id, updated);
-  const event = createEmergencyEvent(journey.id, req.body?.reason || 'possible emergency');
-  auditLog.push({
-    type: 'emergency_escalated',
-    timestamp: new Date().toISOString(),
-    details: { journeyId: journey.id, event }
-  });
-
-  res.json({
-    journey: updated,
-    event,
-    message: 'Emergency workflow triggered. Demo command center notified. No real police system is connected.'
-  });
-});
-
 app.post('/api/journeys/:id/cancel', (req, res) => {
   const journey = journeys.get(req.params.id);
   if (!journey) {
@@ -140,17 +121,56 @@ app.post('/api/journeys/:id/cancel', (req, res) => {
   res.json({ journey: updated, message: 'Safe Journey monitoring has been cancelled.' });
 });
 
+app.post('/api/journeys/:id/no-response', (req, res) => {
+  const journey = journeys.get(req.params.id);
+  if (!journey) {
+    res.status(404).json({ error: 'Journey not found.' });
+    return;
+  }
+
+  const updated = processJourneyEvent(journey, 'no_response');
+  journeys.set(journey.id, updated);
+  auditLog.push({
+    type: 'no_response_escalation',
+    timestamp: new Date().toISOString(),
+    details: { journeyId: journey.id, level: updated.emergencyLevel }
+  });
+
+  res.json({ journey: updated, message: 'No response timeout triggered. Escalation level 3 is active.' });
+});
+
+app.post('/api/journeys/:id/emergency', (req, res) => {
+  const journey = journeys.get(req.params.id);
+  if (!journey) {
+    res.status(404).json({ error: 'Journey not found.' });
+    return;
+  }
+
+  const updated = processJourneyEvent(journey, 'emergency');
+  journeys.set(journey.id, updated);
+  const event = createEmergencyEvent(journey.id, String(req.body?.reason || 'possible emergency'));
+  auditLog.push({
+    type: 'emergency_escalated',
+    timestamp: new Date().toISOString(),
+    details: { journeyId: journey.id, event }
+  });
+
+  res.json({
+    journey: updated,
+    event,
+    message: 'Emergency workflow triggered. Demo command center notified. No real police system is connected.'
+  });
+});
+
 app.post('/api/guardian/chat', (req, res) => {
   const message = String(req.body?.message || '');
   const selectedRoute = String(req.body?.selectedRoute || 'Route A');
   const reply = generateGuardianReply(message, selectedRoute);
-
   auditLog.push({
     type: 'guardian_chat',
     timestamp: new Date().toISOString(),
     details: { message, reply }
   });
-
   res.json({ reply, route: selectedRoute });
 });
 
@@ -166,7 +186,6 @@ app.post('/api/integration/simulated', (req, res) => {
   const journeyId = String(req.body?.journeyId || 'demo-journey');
   const reason = String(req.body?.reason || 'possible emergency');
   const event = createEmergencyEvent(journeyId, reason);
-
   auditLog.push({
     type: 'simulated_integration_event',
     timestamp: new Date().toISOString(),
