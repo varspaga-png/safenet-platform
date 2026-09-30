@@ -109,6 +109,60 @@ export function processJourneyEvent(journey: Partial<Journey>, event: string): J
   };
 }
 
+export function evaluateSensorAnomaly(input: {
+  motionScore?: number;
+  acceleration?: number;
+  orientationChange?: number;
+  gpsConfidence?: number;
+}): {
+  status: 'low' | 'medium' | 'high';
+  confidence: number;
+  message: string;
+} {
+  const motion = input.motionScore ?? 0.2;
+  const acceleration = input.acceleration ?? 0.1;
+  const orientation = input.orientationChange ?? 0.1;
+  const gps = input.gpsConfidence ?? 0.8;
+
+  const confidence = Math.min(
+    99,
+    Math.max(
+      0,
+      (motion * 32 + acceleration * 26 + orientation * 20 + (1 - gps) * 22) * 100
+    )
+  );
+
+  if (confidence < 35) {
+    return {
+      status: 'low',
+      confidence: Number(confidence.toFixed(1)),
+      message: 'Sensor activity is within the normal operating range.'
+    };
+  }
+
+  if (confidence < 70) {
+    return {
+      status: 'medium',
+      confidence: Number(confidence.toFixed(1)),
+      message: 'Unusual movement detected. Are you safe?'
+    };
+  }
+
+  return {
+    status: 'high',
+    confidence: Number(confidence.toFixed(1)),
+    message: 'Possible fall or sudden disturbance detected. Safety timer is active.'
+  };
+}
+
+export function buildEmergencyTimer(secondsRemaining: number) {
+  return {
+    countdown: Math.max(0, secondsRemaining),
+    prompt: 'Are you safe?',
+    actions: ['I\'m safe', 'Continue monitoring', 'Emergency']
+  };
+}
+
 export function generateGuardianReply(message: string, selectedRoute?: string): string {
   const lower = message.toLowerCase();
 
